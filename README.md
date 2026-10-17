@@ -29,7 +29,7 @@ All data in this project is simulated. No real patient information is used.
 |---|---|---|
 | Sai Akshaya | Python and data generation (Data Engineer) | Sai-Akshaya-D |
 | Adarsh Porwal | BigQuery and dbt (Data Pipeline Engineer) | Adrash-Porwal |
-| Shivasakthi S | PM4Py and process discovery (Process Analytics Engineer) | SHIVASAKTHI |
+| Shivasakthi S | PM4Py and process discovery (Process Analytics Engineer) | SHIVASAKTHI-S |
 
 ## Repository structure
 - `simulator/`   mock data generator and validation script
