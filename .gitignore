@@ -1,0 +1,25 @@
+# Secrets and credentials (never commit these)
+*.json
+.env
+profiles.yml
+
+# dbt
+target/
+dbt_packages/
+logs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Large raw data (keep only small sample files in data/)
+data/raw/
+*.xes
+*.xes.gz
+
+# OS and editor files
+.DS_Store
+.vscode/
