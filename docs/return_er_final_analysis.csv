@@ -1,0 +1,9 @@
+Metric,Value
+Total Return ER events,294.0
+Unique cases with Return ER,294.0
+Return ER after Release A,276.0
+Percentage after Release A,93.88
+Average Release A to Return ER (hours),1976.14
+Median Release A to Return ER (hours),1134.4
+Minimum Release A to Return ER (hours),7.0
+Maximum Release A to Return ER (hours),10014.25
