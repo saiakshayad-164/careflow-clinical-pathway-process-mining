@@ -17,6 +17,7 @@ venv/
 
 # Large raw data (keep only small sample files in data/)
 data/raw/
+data/event_log.csv
 *.xes
 *.xes.gz
 
