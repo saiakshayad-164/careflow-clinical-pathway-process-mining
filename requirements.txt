@@ -1,0 +1,9 @@
+dbt-core
+dbt-bigquery
+pm4py
+pandas
+numpy
+google-cloud-bigquery
+db-dtypes
+google-auth
+google-auth-oauthlib

@@ -1,0 +1,14 @@
+# dbt generated folders
+careflow_dbt/target/
+careflow_dbt/dbt_packages/
+careflow_dbt/logs/
+
+# Credentials and secrets
+*.json
+profiles.yml
+.dbt/
+.env
+
+# Python output and cache files
+__pycache__/
+*.png

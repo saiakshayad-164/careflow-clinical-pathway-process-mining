@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: careflow_raw
+    database: your-gcp-project-id
+    schema: careflow_raw
+    tables:
+      - name: raw_ehr_logs
