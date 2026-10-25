@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: stg_hospital_events
+    description: "Cleaned hospital event log for CareFlow"
+    columns:
+      - name: case_id
+        data_tests:
+          - not_null
+      - name: activity_name
+        data_tests:
+          - not_null
+      - name: event_timestamp
+        data_tests:
+          - not_null
+
+  - name: event_log
+    description: "Validated event log for CareFlow process mining"
+    columns:
+      - name: case_id
+        data_tests:
+          - not_null
+      - name: activity_name
+        data_tests:
+          - not_null
+      - name: event_timestamp
+        data_tests:
+          - not_null
