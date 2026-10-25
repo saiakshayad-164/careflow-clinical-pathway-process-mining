@@ -1,24 +1,24 @@
+import os
+import pm4py
 from google.cloud import bigquery
 from google.auth import default
-import pandas as pd
-import pm4py
 
-# 1. BigQuery Client Setup
+# 1. Initialize BigQuery Client
 credentials, project_id = default()
 client = bigquery.Client(credentials=credentials, project=project_id)
 
-# 2. Query event log data with actual sample columns
+# 2. Query Cleaned Event Logs from dbt Model
 query = """
     SELECT 
-        Case_ID,
-        Activity_Name,
-        Timestamp,
-        Resource,
-        Age_Group
+        case_id,
+        activity_name,
+        event_timestamp,
+        resource,
+        age_group
     FROM 
-        `your-gcp-project-id.careflow_raw.raw_ehr_logs`
+        `careflow-analytics-production.dbt_adarsh.event_log`
     ORDER BY 
-        Case_ID, Timestamp ASC
+        case_id, event_timestamp ASC
 """
 
 print("Fetching event logs from BigQuery...")
@@ -26,18 +26,23 @@ df = client.query(query).to_dataframe()
 
 # 3. Format DataFrame for PM4Py
 df_formatted = pm4py.format_dataframe(
-    df, 
-    case_id_key='Case_ID', 
-    activity_key='Activity_Name', 
-    timestamp_key='Timestamp'
+    df,
+    case_id_key='case_id',
+    activity_key='activity_name',
+    timestamp_key='event_timestamp'
 )
 
-# 4. Discover Process Tree
+# 4. Discover Process Tree & Petri Net
 print("Discovering process model...")
 process_tree = pm4py.discover_process_tree_inductive(df_formatted)
+net, initial_marking, final_marking = pm4py.convert_to_petri_net(process_tree)
 
 # 5. Save Process Map
-net, initial_marking, final_marking = pm4py.convert_to_petri_net(process_tree)
 pm4py.save_vis_petri_net(net, initial_marking, final_marking, file_path="careflow_process_map.png")
-
 print("Success! Process map saved as 'careflow_process_map.png'.")
+
+# 6. Trace Variant Analysis
+print("\n--- Trace Variant Analysis ---")
+variants = pm4py.get_variants(df_formatted)
+for variant, count in list(variants.items())[:5]:  # Top 5 variants
+    print(f"Path: {variant} | Occurrences: {count}")
