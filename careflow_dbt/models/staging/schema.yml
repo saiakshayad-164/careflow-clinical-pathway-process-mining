@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: careflow_raw
-    database: your-gcp-project-id
-    schema: careflow_raw
+    database: careflow-analytics-production
+    schema: raw_ehr
     tables:
       - name: raw_ehr_logs
