@@ -27,7 +27,7 @@ df = client.query(query).to_dataframe()
 # 3. Format DataFrame for PM4Py
 df_formatted = pm4py.format_dataframe(
     df,
-    case_id_key='case_id',
+    case_id='case_id',
     activity_key='activity_name',
     timestamp_key='event_timestamp'
 )
