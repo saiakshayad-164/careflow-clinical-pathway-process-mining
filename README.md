@@ -23,26 +23,25 @@ As part of the **CareFlow** clinical pathway project, I engineered the **Process
 
 ---
 
+### 📊 1. Process Analytics & Conformance Setup (PM4Py)
+* Developed and executed Python analytics scripts (`run_process_mining.py` & `conformance_checking.py`) utilizing **PM4Py** to evaluate patient treatment flow.
+* Analyzed event logs to identify critical operational bottlenecks across patient care pathways, specifically focusing on high-volume clinical stages like `Leucocytes`, `CRP`, and `ER Registration`.
+
+### 📈 2. Executive BI Dashboard Development (Google Looker Studio)
+* Successfully integrated Google Looker Studio directly with the production dataset on **BigQuery** (`careflow-analytics-production.dbt_adarsh.event_log`).
+* Configured core visual elements and dynamic features:
+  * **KPI Scorecards:** Total unique patient volume (`case_id` - Count Distinct) and total clinical events (`Record Count`).
+  * **Volume Bar Chart:** Visualized high-frequency activity stages (`activity_name`) to highlight operational delay areas.
+  * **Time Series Timeline:** Monitored overall patient volume and treatment trends over time (`event_timestamp`).
+  * **Interactive Controls:** Integrated dynamic Date Range selectors and Activity Dropdown filters for customizable executive reporting.
+* **Live Dashboard URL:** [CareFlow Executive Performance Dashboard](https://datastudio.google.com/reporting/a7fe8627-e495-4cfe-8761-fcd4595ea37f)
+
+### 🌿 3. Documentation & Branch Synchronization
+* Maintained clean Markdown documentation in `README.md` summarizing weekly deliverables, process mining insights, and dashboard links.
+* Synchronized all codebase updates, scripts, and project assets to the remote Git repository under the dedicated working branch `SIVASAKTHI-S`.
+
 ## 📂 Codebase & Folder Structure
 
-
-## 📊 Week 3: Process Analytics & Executive BI Dashboard Integration
-
-### 🎯 Key Deliverables & Contributions
-- **PM4Py Bottleneck Analytics:** Analyzed CareFlow healthcare event logs to identify critical operational bottlenecks across patient treatment pathways (e.g., high-volume clinical stages like `Leucocytes`, `CRP`, and `ER Triage`).
-- **Google Looker Studio Integration:** Built and configured a live native Business Intelligence (BI) Executive Dashboard connected to BigQuery (`careflow-analytics-production.dbt_adarsh.event_log`).
-- **Executive Metrics & Visualizations:**
-  - **KPI Scorecards:** Total unique patient volume (`case_id` - Count Distinct) and total clinical events (`Record Count`).
-  - **Volume Bar Chart:** Visualized high-frequency activity stages (`activity_name`) to isolate operational bottlenecks.
-  - **Time Series Timeline:** Tracked overall patient flow and clinical event trends over time (`event_timestamp`).
-  - **Interactive Controls:** Integrated dynamic Date Range selectors and Activity Dropdown filters for interactive executive reporting.
-
----
-
-### 🔗 Live Interactive Dashboard
-- **Looker Studio Dashboard Link:** [CareFlow Executive Performance Dashboard](https://datastudio.google.com/reporting/a7fe8627-e495-4cfe-8761-fcd4595ea37f)
-
----
 ```text
 careflow/
 │
