@@ -39,7 +39,10 @@ As part of the **CareFlow** clinical pathway project, I engineered the **Process
 ### 🌿 3. Documentation & Branch Synchronization
 * Maintained clean Markdown documentation in `README.md` summarizing weekly deliverables, process mining insights, and dashboard links.
 * Synchronized all codebase updates, scripts, and project assets to the remote Git repository under the dedicated working branch `SIVASAKTHI-S`.
-
+###  4. Conformance Checking & ROI Dashboard Polish
+**BigQuery Conformance Integration**
+* Developed `conformance_checking.py` script with direct Google BigQuery querying to bypass local CSV file dependencies.
+* Formatted raw event logs into PM4Py DataFrames and discovered target Petri Net process models using Inductive Mining.
 ## 📂 Codebase & Folder Structure
 
 ```text
