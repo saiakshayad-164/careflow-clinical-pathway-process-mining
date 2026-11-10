@@ -1,0 +1,30 @@
+Total Events =
+COUNTROWS ( stg_event_log )
+
+Patient Visits =
+DISTINCTCOUNT ( stg_event_log[case_id] )
+
+Distinct Activities =
+DISTINCTCOUNT ( stg_event_log[activity_name] )
+
+Return ER Visits =
+CALCULATE (
+    DISTINCTCOUNT ( fct_case_pathways[case_id] ),
+    fct_case_pathways[has_return_er] = TRUE ()
+)
+
+Return ER Visit Rate =
+DIVIDE ( [Return ER Visits], [Patient Visits], 0 )
+
+Mean Inter-event Gap (minutes) =
+DIVIDE (
+    SUMX (
+        fct_transition_waits,
+        fct_transition_waits[mean_gap_minutes] * fct_transition_waits[transition_count]
+    ),
+    SUM ( fct_transition_waits[transition_count] ),
+    0
+)
+
+Total Recorded Transitions =
+SUM ( fct_transition_waits[transition_count] )
