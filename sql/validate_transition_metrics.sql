@@ -1,36 +1,36 @@
 
--- CareFlow: Transition Metrics Validation
--- Purpose: Validate transition counts by category
--- Dataset: dbt_adarsh
+-- =====================================================
+-- CareFlow Project
+-- Transition Metrics Validation
+-- BigQuery and dbt Data Quality Checks
+-- =====================================================
 
-WITH category_summary AS (
-    SELECT
-        transition_category,
-        COUNT(*) AS total_transition_types,
-        SUM(transition_count) AS total_transitions
-    FROM
-        `careflow-analytics-production.dbt_adarsh.mart_transition_times`
-    GROUP BY
-        transition_category
-)
-
+-- Check transition counts by category
 SELECT
     transition_category,
-    total_transition_types,
-    total_transitions
-FROM category_summary
-
-UNION ALL
-
-SELECT
-    'TOTAL' AS transition_category,
-    SUM(total_transition_types),
-    SUM(total_transitions)
-FROM category_summary
-
+    COUNT(*) AS total_transition_types,
+    SUM(transition_count) AS total_transitions,
+    ROUND(AVG(avg_transition_minutes), 2)
+        AS average_transition_minutes,
+    MIN(min_transition_minutes)
+        AS minimum_transition_minutes,
+    MAX(max_transition_minutes)
+        AS maximum_transition_minutes
+FROM
+    `careflow-analytics-production.dbt_adarsh.mart_transition_times`
+GROUP BY
+    transition_category
 ORDER BY
-    CASE
-        WHEN transition_category = 'TOTAL' THEN 1
-        ELSE 0
-    END,
-    transition_category;
+    total_transitions DESC;
+
+-- Validate overall transition count
+SELECT
+    COUNT(*) AS total_transition_types,
+    SUM(transition_count) AS total_transitions,
+    COUNTIF(transition_category = 'Return Visit')
+        AS return_visit_transition_types,
+    COUNTIF(transition_category = 'Discharge Related')
+        AS discharge_transition_types
+FROM
+    `careflow-analytics-production.dbt_adarsh.mart_transition_times`;
+
