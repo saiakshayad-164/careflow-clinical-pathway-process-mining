@@ -58,32 +58,33 @@ if isinstance(date_range, tuple) and len(date_range) == 2:
 else:
     start_date, end_date = min_date, max_date
 
-filtered = data[
-    data["Timestamp"].dt.date.between(start_date, end_date)
-    & data["Activity_Name"].isin(selected_activities)
-].copy()
+date_filtered = data[data["Timestamp"].dt.date.between(start_date, end_date)].copy()
+filtered = date_filtered[date_filtered["Activity_Name"].isin(selected_activities)].copy()
 if selected_resources and "Resource" in filtered:
     filtered = filtered[filtered["Resource"].astype(str).isin(selected_resources)]
 
 if filtered.empty:
-    st.warning("No events match the selected filters.")
+    st.warning("No events match the selected activity/resource filters.")
     st.stop()
 
-filtered = filtered.sort_values(["Case_ID", "Timestamp", "Activity_Name"])
-filtered["Next_Activity"] = filtered.groupby("Case_ID")["Activity_Name"].shift(-1)
-filtered["Next_Timestamp"] = filtered.groupby("Case_ID")["Timestamp"].shift(-1)
-filtered["Gap_Minutes"] = (filtered["Next_Timestamp"] - filtered["Timestamp"]).dt.total_seconds() / 60
-transitions = filtered.dropna(subset=["Next_Activity", "Gap_Minutes"]).copy()
+# Build transitions and pathways from the complete date-scoped log so activity
+# filters never create artificial shortcuts between non-adjacent events.
+sequence_data = date_filtered.sort_values(["Case_ID", "Timestamp", "Activity_Name"]).copy()
+sequence_data["Next_Activity"] = sequence_data.groupby("Case_ID")["Activity_Name"].shift(-1)
+sequence_data["Next_Timestamp"] = sequence_data.groupby("Case_ID")["Timestamp"].shift(-1)
+sequence_data["Gap_Minutes"] = (
+    sequence_data["Next_Timestamp"] - sequence_data["Timestamp"]
+).dt.total_seconds() / 60
+transitions = sequence_data.dropna(subset=["Next_Activity", "Gap_Minutes"]).copy()
 transitions = transitions[transitions["Gap_Minutes"] >= 0]
 
-case_count = filtered["Case_ID"].nunique()
+case_count = date_filtered["Case_ID"].nunique()
 event_count = len(filtered)
 activity_count = filtered["Activity_Name"].nunique()
 avg_gap = transitions["Gap_Minutes"].mean() if not transitions.empty else 0
-median_gap = transitions["Gap_Minutes"].median() if not transitions.empty else 0
-return_cases = filtered.loc[filtered["Activity_Name"].eq("Return ER"), "Case_ID"].nunique()
+return_cases = date_filtered.loc[date_filtered["Activity_Name"].eq("Return ER"), "Case_ID"].nunique()
 return_rate = return_cases / case_count * 100 if case_count else 0
-repeat_events = filtered.groupby("Case_ID")["Activity_Name"].apply(lambda s: s.duplicated().any()).sum()
+repeat_events = date_filtered.groupby("Case_ID")["Activity_Name"].apply(lambda s: s.duplicated().any()).sum()
 
 c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("Patient visits", f"{case_count:,}")
@@ -92,7 +93,7 @@ c3.metric("Activities", f"{activity_count:,}")
 c4.metric("Mean inter-event gap", f"{avg_gap:,.1f} min")
 c5.metric("Return ER cases", f"{return_cases:,}", f"{return_rate:.1f}% of filtered cases")
 
-st.caption("Inter-event gap is the elapsed time between consecutive recorded events within a case. It is not necessarily a staffed queue/wait time.")
+st.caption("Event counts respond to activity/resource filters. Transition gaps and pathway patterns use the complete date-filtered event sequence so filters do not invent non-adjacent transitions. Inter-event gaps are not necessarily staffed queue/wait times.")
 
 left, right = st.columns(2)
 with left:
@@ -118,7 +119,7 @@ with right:
         st.info("Not enough consecutive events to calculate transitions.")
 
 st.subheader("Pathway patterns")
-case_paths = (filtered.sort_values(["Case_ID", "Timestamp", "Activity_Name"])
+case_paths = (date_filtered.sort_values(["Case_ID", "Timestamp", "Activity_Name"])
               .groupby("Case_ID")["Activity_Name"].agg(lambda x: " → ".join(x.astype(str)))
               .value_counts().head(10).rename_axis("Observed pathway").reset_index(name="Visits"))
 st.dataframe(case_paths, use_container_width=True, hide_index=True)
@@ -134,9 +135,9 @@ if not transitions.empty:
     st.dataframe(detail, use_container_width=True, hide_index=True)
 
 st.subheader("Case-level drill-down")
-case_options = sorted(filtered["Case_ID"].dropna().astype(str).unique().tolist())
+case_options = sorted(date_filtered["Case_ID"].dropna().astype(str).unique().tolist())
 selected_case = st.selectbox("Choose a visit ID", case_options)
-case_view = filtered[filtered["Case_ID"].astype(str).eq(selected_case)].sort_values("Timestamp")
+case_view = date_filtered[date_filtered["Case_ID"].astype(str).eq(selected_case)].sort_values("Timestamp")
 display_cols = [c for c in ["Timestamp", "Activity_Name", "Resource", "Age_Group"] if c in case_view.columns]
 st.dataframe(case_view[display_cols], use_container_width=True, hide_index=True)
 
