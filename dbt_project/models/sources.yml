@@ -1,0 +1,7 @@
+version: 2
+sources:
+  - name: careflow_raw
+    database: "{{ var('gcp_project') }}"
+    schema: "{{ var('bq_dataset', 'careflow') }}"
+    tables:
+      - name: raw_event_log
