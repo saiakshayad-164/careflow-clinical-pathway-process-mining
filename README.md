@@ -45,6 +45,18 @@ python -m pip install -r dashboard/requirements.txt
 streamlit run dashboard/app.py
 ```
 
+
+## Deploy the dashboard
+
+Deploy the Streamlit app using [Streamlit Community Cloud](https://share.streamlit.io/deploy?repository=saiakshayad-164/careflow-clinical-pathway-process-mining&branch=Sai-Akshaya-D&mainModule=dashboard%2Fapp.py).
+
+1. Sign in to Streamlit Community Cloud with GitHub and authorize access to this repository.
+2. Select repository `saiakshayad-164/careflow-clinical-pathway-process-mining`, branch `Sai-Akshaya-D`, and main file `dashboard/app.py`.
+3. Select **Deploy** and wait for the app to finish building.
+4. Copy the public app URL provided by Streamlit and add it here as the live dashboard link.
+
+The repository contains the deployment configuration target, but the public app URL is created only after deployment is completed in Streamlit Community Cloud. The dashboard reads the committed `data/event_log_validated.csv` file by default.
+
 ## Quick start: process analysis
 
 ```bash
