@@ -2,55 +2,80 @@
 
 Infotact Solutions internship project (Data Analytics, Project 3).
 
-## Problem
-Hospital emergency room dashboards report an average waiting time, but they
-do not show the real sequence of steps each patient follows. CareFlow rebuilds
-the actual patient journeys from event logs, finds repeated or unusual paths
-(for example, patients sent back to Triage after an X-Ray), and shows where
-time is lost.
+## Objective
 
-## Pipeline
-Python simulator -> BigQuery (raw table) -> dbt (clean event log)
--> PM4Py (process discovery) -> Power BI dashboard
+CareFlow reconstructs patient journeys from event logs, identifies repeated or unusual activity sequences, and highlights long gaps between consecutive recorded events. These measures support operational investigation; they are not clinical diagnoses or proof of queue time.
 
-## Event log format
+## Current pipeline
+
+CSV event log → BigQuery raw table → dbt staging and marts → pandas/PM4Py process analysis → interactive Streamlit dashboard
+
+The original project plan names Power BI as the presentation target. The repository currently includes a runnable Streamlit dashboard. A native Power BI `.pbix` still needs to be authored and validated in Power BI Desktop if it is a formal deliverable.
+
+## Event-log schema
+
 | Column | Description |
 |---|---|
-| Case_ID | One patient visit |
-| Activity_Name | Hospital step (Registration, Triage, Doctor, X-Ray, Treatment, Discharge) |
-| Timestamp | When the step happened (UTC, ISO format) |
+| `Case_ID` | One patient visit/case |
+| `Activity_Name` | Recorded clinical/process activity |
+| `Timestamp` | Event timestamp (UTC) |
+| `Resource` | Optional resource/group |
+| `Age_Group` | Optional demographic band; may be missing |
 
-Optional extra columns for dashboard filters: Resource, Doctor_ID, Age_Group, Department.
+## Data provenance
 
-All data in this project is simulated. No real patient information is used.
-
-## Team
-| Member | Role | Branch |
-|---|---|---|
-| Sai Akshaya | Python and data generation (Data Engineer) | Sai-Akshaya-D |
-| Adarsh Porwal | BigQuery and dbt (Data Pipeline Engineer) | Adrash-Porwal |
-| Shivasakthi S | PM4Py and process discovery (Process Analytics Engineer) | SHIVASAKTHI-S |
+The current committed event log was converted from a Sepsis Cases XES event log using `simulator/convert_dataset.py`. It is **not newly generated synthetic data**. The current validated handoff contains 15,183 events across 1,049 cases after removing seven exact duplicate rows from the cleaned file. Review the data license/provenance before external redistribution. Do not claim that all repository data is simulated.
 
 ## Repository structure
-- `simulator/`   mock data generator and validation script
-- `data/`        small sample files only
-- `warehouse/`   BigQuery setup and load scripts
-- `dbt_project/` dbt models
-- `mining/`      PM4Py scripts
-- `dashboard/`   Power BI files and notes
-- `docs/`        schema, validation report, weekly logs
 
-## Git workflow
-1. Work only on your own branch.
-2. Commit small, meaningful changes at least once a day.
-3. Open a pull request into `main`. The Team Lead reviews and merges.
-4. Never commit passwords, keys, `.env` files or `profiles.yml`.
+- `simulator/` conversion and validation scripts
+- `data/` event-log CSV files and raw source folder
+- `warehouse/` BigQuery table schema and loading instructions
+- `dbt_project/` staging model, analytical marts and tests
+- `mining/` event-log analytics and PM4Py process discovery
+- `dashboard/` interactive dashboard and dependencies
+- `docs/` validation and analysis documentation
+
+## Quick start: dashboard
+
+From the repository root:
+
+```bash
+python -m pip install -r dashboard/requirements.txt
+streamlit run dashboard/app.py
+```
+
+## Quick start: process analysis
+
+```bash
+python -m pip install -r mining/requirements.txt
+python mining/analyze_event_log.py
+```
+
+Outputs are written to `docs/generated/`. PM4Py model discovery is attempted when its dependencies are installed.
+
+## BigQuery and dbt
+
+See [warehouse setup](warehouse/README.md) for raw table creation, CSV loading, OAuth authentication and dbt commands. Never commit service-account keys, `.env` files or local `profiles.yml`.
+
+## Team branches
+
+| Contributor | Responsibility | Branch |
+|---|---|---|
+| Sai Akshaya | Python, event-log preparation and validation | `Sai-Akshaya-D` |
+| Adarsh Porwal | BigQuery and dbt | `Adarsh-Porwal` (confirm exact spelling in GitHub) |
+| Shivasakthi S | PM4Py and process discovery | `SIVASAKTHI-S` (confirm exact spelling in GitHub) |
 
 ## Weekly plan
-- Week 1: generate mock data, load it into BigQuery, set up dbt.
-- Week 2: clean the data with dbt, discover the process with PM4Py.
-- Week 3: bottleneck calculations and Power BI dashboard.
-- Week 4: conformance checking, polish, report and presentation.
 
-## Setup
-Instructions will be added as each part is built.
+- Week 1: event data preparation, warehouse and dbt setup
+- Week 2: event-log cleaning and process discovery
+- Week 3: bottleneck calculations and dashboard
+- Week 4: conformance checking against an approved reference model, polish, report and presentation
+
+## Interpretation cautions
+
+- The elapsed time between two recorded events is called an **inter-event gap**. It is not automatically a queue or clinician waiting time.
+- A discovered process model describes the observed log; it is not a normative clinical pathway.
+- Genuine conformance checking requires a separately approved reference model.
+- Missing optional fields such as `Age_Group` should not be treated as missing core event identifiers.
