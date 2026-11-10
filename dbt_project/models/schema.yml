@@ -1,0 +1,21 @@
+version: 2
+models:
+  - name: stg_event_log
+    description: Valid, deduplicated event records from the BigQuery raw table.
+    columns:
+      - name: case_id
+        tests: [not_null]
+      - name: activity_name
+        tests: [not_null]
+      - name: event_timestamp
+        tests: [not_null]
+  - name: fct_transition_waits
+    description: Consecutive activity transitions and elapsed inter-event gaps.
+    columns:
+      - name: transition_count
+        tests: [not_null]
+  - name: fct_case_pathways
+    description: One row per visit with its observed pathway and duration.
+    columns:
+      - name: case_id
+        tests: [unique, not_null]
