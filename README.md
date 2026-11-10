@@ -71,6 +71,50 @@ The table is intended for use by the process-mining teammate as the input to PM4
 
 Events should be ordered by `case_id` and `event_timestamp` during downstream processing. A SQL table does not guarantee persistent row order by itself.
 
+## BigQuery and dbt Data Engineering
+
+### Overview
+The BigQuery and dbt component of CareFlow is responsible for preparing, cleaning, transforming, and validating simulated hospital event log data for process mining analysis.
+
+### Data Warehouse
+- Cloud Platform: Google BigQuery
+- GCP Project: `careflow-analytics-production`
+- Raw Dataset: `raw_ehr`
+- Transformed Dataset: `dbt_adarsh`
+- Source Table: `simulated_hospital_events`
+
+### Data Preparation
+The raw hospital event log contains 15,183 records across 1,049 unique patient cases. The cleaning process standardizes case identifiers, trims activity names, and filters records with missing essential fields.
+
+### dbt Models
+1. `stg_hospital_events.sql` – Standardizes source columns and prepares staging data.
+2. `event_log.sql` – Creates the structured patient event log.
+3. `mart_transition_times.sql` – Calculates consecutive activity transition counts and duration metrics.
+
+### Transition Analysis
+The transition analysis includes:
+- Transition frequency between consecutive activities.
+- Average transition duration in minutes.
+- Median transition duration.
+- Minimum and maximum transition duration.
+- Classification of return visits and discharge-related transitions.
+
+### Data Quality Validation
+The pipeline uses dbt tests and BigQuery SQL validation queries to check required fields and transition metrics.
+
+Verified event log:
+- Total events: 15,183
+- Unique patient cases: 1,049
+- Missing case IDs: 0
+- Missing activities: 0
+- Missing timestamps: 0
+
+### Team Contribution
+The BigQuery and dbt work covers data ingestion, cleaning, transformation, transition analysis, and data quality validation. The resulting structured datasets support the team's process mining and Power BI analysis.
+
+### Important Note
+Transition durations represent differences between consecutive recorded event timestamps. Large gaps, repeated activities, and return visits require contextual investigation before being interpreted as confirmed hospital waiting-time bottlenecks.
+
 ### 6. Team Handoff
 
 The BigQuery/dbt contribution provides a cleaned and normalized Event Log for downstream process discovery.
