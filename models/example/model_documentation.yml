@@ -1,0 +1,57 @@
+
+version: 2
+
+models:
+  - name: stg_hospital_events
+    description: >
+      Staging model that standardizes hospital event data
+      from the cleaned BigQuery source table.
+    columns:
+      - name: case_id
+        description: Unique identifier for each patient case.
+      - name: activity_name
+        description: Name of the recorded hospital activity.
+      - name: event_timestamp
+        description: Timestamp when the activity was recorded.
+      - name: resource
+        description: Resource associated with the activity.
+      - name: age_group
+        description: Age group associated with the patient case.
+
+  - name: event_log
+    description: >
+      Final structured patient event log used for
+      consecutive activity and process analysis.
+    columns:
+      - name: case_id
+        description: Unique identifier for a patient case.
+      - name: activity_name
+        description: Recorded activity in the patient journey.
+      - name: event_timestamp
+        description: Timestamp of the recorded event.
+      - name: resource
+        description: Resource associated with the event.
+      - name: age_group
+        description: Patient age group.
+
+  - name: mart_transition_times
+    description: >
+      Analytical model containing transition counts and
+      duration metrics between consecutive patient activities.
+    columns:
+      - name: from_activity
+        description: Activity recorded before the next activity.
+      - name: to_activity
+        description: Next activity recorded for the same case.
+      - name: transition_category
+        description: Analytical classification of the transition.
+      - name: transition_count
+        description: Number of occurrences of the activity transition.
+      - name: avg_transition_minutes
+        description: Average time gap between consecutive activities.
+      - name: median_transition_minutes
+        description: Median time gap in minutes.
+      - name: min_transition_minutes
+        description: Minimum observed time gap in minutes.
+      - name: max_transition_minutes
+        description: Maximum observed time gap in minutes.
